@@ -15,7 +15,7 @@
 	* defaults sont les reglages que l'utilisateur peut faire varier
 	* settings sont les variables attachees a chaque carousel
 	*
-	* event 'reloadplopcarousel' sur le conteneur relancera l'execution du carousel en cas de changement de contenu
+	* event 'reloadcarousel' sur le conteneur relancera l'execution du carousel en cas de changement de contenu
 	*/
     "use strict";
     var pluginName = "plopCarousel",
@@ -97,7 +97,7 @@
         else{
             self.setCarousel();
         }
-        $(self.element).one('reloadplopcarousel',function(event){
+        $(self.element).one('reloadcarousel',function(event){
             event.stopPropagation();
             self.options.allCarousel.stop(true,true);
             self.options.tempo =window.clearTimeout(self.options.tempo);
