@@ -4,7 +4,7 @@
  * Comments: Yann Vignolet
  * Date : 13/01/2012
  * http://www.yannvignolet.fr
- * Version : 1.1
+ * Version : 1.1.1
  *
  * Ce plugin affiche en diaporama les images d'un conteneur avec des effets de transition.
  *
@@ -70,7 +70,7 @@
     Plugin.prototype.init = function () {
         var self = this,largeurOrigine=$(self.element).width(),hauteurOrigine=$(self.element).height();
         $(self.element).unbind('stopcarousel');
-        $(self.element).unbind('reloadcarousel');       
+        $(self.element).unbind('reloadcarousel');
         self.options.archive=$(self.element).html();
         $(self.element).addClass('carouselcontainer loaderCarousel').append('<div class="animationCarousel plopCarousel"></div>');
         $(self.element).find("img").addClass('carousel').appendTo($(self.element).find('.animationCarousel'));
@@ -89,6 +89,9 @@
                 self.error('hauteur');
             }
         }
+        else{
+            $(self.element).css({'height':'auto','min-height':self.options.hauteur})
+            }
         $(self.element).find('.animationCarousel').height(self.options.hauteur).width(self.options.largeur);
         self.options.nbElement = self.options.allCarousel.length;
         self.options.elementPrecedent = self.options.nbElement;
@@ -101,12 +104,12 @@
         }
         $(self.element).one('reloadcarousel',function(event, callback) {
             event.stopPropagation();
-            //console.log('reloadcarousel')
+            $(self.element).trigger('stopcarousel');
+
             if( typeof callback === 'function') {
-				self.callback = callback;
-			}
-            self.options.allCarousel.stop(true,true);
-            self.options.tempo =window.clearTimeout(self.options.tempo);
+                self.callback = callback;
+            }
+
             self.options.nbElement = null;
             self.options.elementCourant = 0;
             self.options.elementPrecedent = null;
@@ -114,7 +117,7 @@
             self.options.survole = false;
             self.options.update = [];
             $(self.element).removeClass('carouselcontainer');
-            
+
             if($(self.element).find(".plopCarousel")){
                 //$(self.element).html(self.options.archive);
                 $(self.element).find(".plopCarousel").remove();
@@ -124,10 +127,13 @@
             self.init();
         });
         $(self.element).one('stopcarousel',function(event){
-        	event.stopPropagation();
-        	//console.log('stop')
-        	 self.options.allCarousel.stop(true,true);
-        	 self.options.tempo =window.clearTimeout(self.options.tempo);
+            event.stopPropagation();
+
+            self.options.allCarousel.stop(true,true);
+            self.options.tempo =window.clearTimeout(self.options.tempo);
+            $(self.element).find('.ePlopCarousel').die('click');
+
+
         });
     };
     /**
@@ -145,11 +151,13 @@
             _checki=function(e) {
                 if((_img.complete) || (_img.readyState==='complete'&&e.type==='readystatechange') )
                 {
-                    $(self.element).find('.loaderCarouselProgress').css({'width':(loaderCarouselProgress)+'px'});
+                    $(self.element).find('.loaderCarouselProgress').css({
+                        'width':(loaderCarouselProgress)+'px'
+                        });
                     loaderCarouselProgress+=100/self.options.nbElement;
                     if( ++i===self.options.nbElement ){
-                            _done();
-                        }
+                        _done();
+                    }
                 }
                 else if( _img.readyState === undefined ) // dont for IE
                 {
@@ -202,7 +210,10 @@
             }
             self.startCarousel();
         }else{
-            self.options.allCarousel.css({'top':0,'left':0}).show();
+            self.options.allCarousel.css({
+                'top':0,
+                'left':0
+            }).show();
             $(self.element).removeClass('loaderCarousel').find('.loaderCarouselBar').remove();
         }
     };
@@ -212,7 +223,7 @@
     Plugin.prototype.fleches = function(){
         var self = this;
         $(self.element).append("<div class='flecheGauche flechesCarousel plopCarousel'></div><div class='flecheDroite flechesCarousel plopCarousel'></div>");
-        $(self.element).find('.flecheGauche').live('click', function(event) {
+        $(self.element).find('.flecheGauche').addClass('ePlopCarousel').live('click', function(event) {
             event.stopPropagation();
             self.options.allCarousel.stop(true,true);
             self.options.elementPrecedent = Number($(self.element).find('.active').attr('data'));
@@ -220,7 +231,7 @@
             self.options.click=true;
             self.play();
         });
-        $(self.element).find('.flecheDroite').live('click', function(event) {
+        $(self.element).find('.flecheDroite').addClass('ePlopCarousel').live('click', function(event) {
             event.stopPropagation();
             self.options.allCarousel.stop(true,true);
             self.options.elementPrecedent = Number($(self.element).find('.active').attr('data'));
@@ -262,7 +273,7 @@
             $(self.element).find(".selecteurCarousel").append("<span data='"+i+"'>&bull;</span>");
         }
         $(self.element).find(".selecteurCarousel").find("span:first").addClass('select');
-        $(self.element).find(".selecteurCarousel").find("span").live('click', function(event) {
+        $(self.element).find(".selecteurCarousel").find("span").addClass('ePlopCarousel').live('click', function(event) {
             event.stopPropagation();
             self.options.allCarousel.stop(true,true);
             self.options.elementPrecedent = Number($(self.element).find('.active').attr('data'));
@@ -319,12 +330,12 @@
             'width':self.options.vignetteLargeur+'px'
         });
 
-       /* $(self.element).css({
+        /* $(self.element).css({
             'width':'auto',
             'height':'auto'
         });*/
         $(self.element).find(".vignetteCarousel").find("div:first").addClass('select');
-        $(self.element).find(".vignetteCarousel").find("img").live('click', function(event) {
+        $(self.element).find(".vignetteCarousel").find("img").addClass('ePlopCarousel').live('click', function(event) {
             event.stopPropagation();
             self.options.allCarousel.stop(true,true);
             self.options.allCarousel.find('div').stop();
@@ -335,40 +346,40 @@
             self.play();
         });
         if(self.options.infobulle){
-        $(self.element).find(".vignetteCarousel").find("img").hover(
-            function() {
-                if($(this).attr("alt")!==""){
-                    $('body').append('<span class="infobulleCarousel plopCarousel"></span>');
-                    var bulle = $(".infobulleCarousel:last");
-                    bulle.append($(this).attr("alt"));
-                    var posTop = $(this).parent().offset().top;
-                    var posLeft = $(this).parent().offset().left+$(this).parent().width()/2-bulle.width()/2;
-                    bulle.css({
-                        'left':posLeft,
-                        'top':posTop-30,
-                        'opacity':0
-                    });
-                    bulle.animate({
-                        'top':posTop-20,
-                        opacity:0.99
-                    });
-                }
-            },
-            function() {
-                var bulle = $(".infobulleCarousel:last");
-                bulle.animate(
-                {
-                    'top':bulle.offset().top-30,
-                    'opacity':0
+            $(self.element).find(".vignetteCarousel").find("img").hover(
+                function() {
+                    if($(this).attr("alt")!==""){
+                        $('body').append('<span class="infobulleCarousel plopCarousel"></span>');
+                        var bulle = $(".infobulleCarousel:last");
+                        bulle.append($(this).attr("alt"));
+                        var posTop = $(this).parent().offset().top;
+                        var posLeft = $(this).parent().offset().left+$(this).parent().width()/2-bulle.width()/2;
+                        bulle.css({
+                            'left':posLeft,
+                            'top':posTop-30,
+                            'opacity':0
+                        });
+                        bulle.animate({
+                            'top':posTop-20,
+                            opacity:0.99
+                        });
+                    }
                 },
-                500,
-                "linear",
-                function(){
-                    bulle.remove();
-                }
-                );
-            });
-            }
+                function() {
+                    var bulle = $(".infobulleCarousel:last");
+                    bulle.animate(
+                    {
+                        'top':bulle.offset().top-30,
+                        'opacity':0
+                    },
+                    500,
+                    "linear",
+                    function(){
+                        bulle.remove();
+                    }
+                    );
+                });
+        }
         self.options.update.push(function(){
             $(self.element).children(".vignetteCarousel").find("div").eq(self.options.elementCourant).addClass('select').siblings("div").removeClass('select');
         });
@@ -401,7 +412,7 @@
         $(self.element).find(".slideVignetteCarousel").width(self.options.nbElement*$(self.element).find(".slideVignetteCarousel").find("div:first").outerWidth(true));
         $(self.element).find(".masqueCarousel").width(self.options.slideVignetteNbr*$(self.element).find(".slideVignetteCarousel").find("div:first").outerWidth(true));
         $(self.element).find('.blocVignetteCarousel').width($(self.element).find(".masqueCarousel").outerWidth(true)+ $(self.element).find('.gaucheVignetteCarousel').outerWidth(true)+$(self.element).find('.droiteVignetteCarousel').outerWidth(true)).height($(self.element).find(".slideVignetteCarousel").find("div:first").outerHeight(true));
-        $(self.element).find(".slideVignetteCarousel").find("img").live('click', function(event) {
+        $(self.element).find(".slideVignetteCarousel").find("img").addClass('ePlopCarousel').live('click', function(event) {
             event.stopPropagation();
             self.options.allCarousel.stop(true,true);
             self.options.allCarousel.find('div').stop();
@@ -411,7 +422,7 @@
             self.options.click=true;
             self.play();
         });
-        $(self.element).find('.gaucheVignetteCarousel').live('click', function(event) {
+        $(self.element).find('.gaucheVignetteCarousel').addClass('ePlopCarousel').live('click', function(event) {
             event.stopPropagation();
             self.options.allCarousel.stop(true,true);
             self.options.elementPrecedent = Number($(self.element).find('.active').attr('data'));
@@ -419,7 +430,7 @@
             self.options.click=true;
             self.play();
         });
-        $(self.element).find('.droiteVignetteCarousel').live('click', function(event) {
+        $(self.element).find('.droiteVignetteCarousel').addClass('ePlopCarousel').live('click', function(event) {
             event.stopPropagation();
             self.options.allCarousel.stop(true,true);
             self.options.elementPrecedent = Number($(self.element).find('.active').attr('data'));
@@ -683,7 +694,7 @@
 	 */
     Plugin.prototype.update = function(){
         var self = this;
-        /*self.options.update.forEach(function(iFunc)*/
+
         for(var i=0; i<self.options.update.length;i++)
         {
             self.options.update[i]();//lancement de chacune des fonctions contenues dans le tableau update
