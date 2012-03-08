@@ -4,7 +4,7 @@
  * Comments: Yann Vignolet
  * Date : 13/01/2012
  * http://www.yannvignolet.fr
- * Version : 1.0
+ * Version : 1.1
  *
  * Ce plugin affiche en diaporama les images d'un conteneur avec des effets de transition.
  *
@@ -69,8 +69,10 @@
 	 */
     Plugin.prototype.init = function () {
         var self = this,largeurOrigine=$(self.element).width(),hauteurOrigine=$(self.element).height();
+        $(self.element).unbind('stopcarousel');
+        $(self.element).unbind('reloadcarousel');       
         self.options.archive=$(self.element).html();
-        $(self.element).addClass('carouselcontainer loaderCarousel').append('<div class="animationCarousel"></div>');
+        $(self.element).addClass('carouselcontainer loaderCarousel').append('<div class="animationCarousel plopCarousel"></div>');
         $(self.element).find("img").addClass('carousel').appendTo($(self.element).find('.animationCarousel'));
         self.options.allCarousel = $(self.element).find('.carousel');
         if(!self.options.largeur){
@@ -91,14 +93,18 @@
         self.options.nbElement = self.options.allCarousel.length;
         self.options.elementPrecedent = self.options.nbElement;
         if(self.options.preload){
-            $(self.element).prepend('<div class="loaderCarouselBar"><div class="loaderCarouselProgress"></div></div>');
+            $(self.element).prepend('<div class="loaderCarouselBar plopCarousel"><div class="loaderCarouselProgress"></div></div>');
             self.precharger_image();
         }
         else{
             self.setCarousel();
         }
-        $(self.element).one('reloadcarousel',function(event){
+        $(self.element).one('reloadcarousel',function(event, callback) {
             event.stopPropagation();
+            //console.log('reloadcarousel')
+            if( typeof callback === 'function') {
+				self.callback = callback;
+			}
             self.options.allCarousel.stop(true,true);
             self.options.tempo =window.clearTimeout(self.options.tempo);
             self.options.nbElement = null;
@@ -108,12 +114,20 @@
             self.options.survole = false;
             self.options.update = [];
             $(self.element).removeClass('carouselcontainer');
-            if($(self.element).find("img").hasClass('carousel')){
-                $(self.element).html(self.options.archive);
+            
+            if($(self.element).find(".plopCarousel")){
+                //$(self.element).html(self.options.archive);
+                $(self.element).find(".plopCarousel").remove();
             }
             $.extend(self.options,event);
             $(self.element).height(hauteurOrigine).width(largeurOrigine);
             self.init();
+        });
+        $(self.element).one('stopcarousel',function(event){
+        	event.stopPropagation();
+        	//console.log('stop')
+        	 self.options.allCarousel.stop(true,true);
+        	 self.options.tempo =window.clearTimeout(self.options.tempo);
         });
     };
     /**
@@ -197,7 +211,7 @@
 	 */
     Plugin.prototype.fleches = function(){
         var self = this;
-        $(self.element).append("<div class='flecheGauche flechesCarousel'></div><div class='flecheDroite flechesCarousel'></div>");
+        $(self.element).append("<div class='flecheGauche flechesCarousel plopCarousel'></div><div class='flecheDroite flechesCarousel plopCarousel'></div>");
         $(self.element).find('.flecheGauche').live('click', function(event) {
             event.stopPropagation();
             self.options.allCarousel.stop(true,true);
@@ -243,7 +257,7 @@
 	 */
     Plugin.prototype.selecteur = function(){
         var self = this;
-        $(self.element).append("<div class='selecteurCarousel'></div>");
+        $(self.element).append("<div class='selecteurCarousel plopCarousel'></div>");
         for (var i = 0; i < self.options.nbElement; i++) {
             $(self.element).find(".selecteurCarousel").append("<span data='"+i+"'>&bull;</span>");
         }
@@ -265,7 +279,7 @@
 	 */
     Plugin.prototype.legendes = function(){
         var self = this;
-        $(self.element).append("<div class='legendCarousel'><p></p></div>");
+        $(self.element).append("<div class='legendCarousel plopCarousel'><p></p></div>");
         self.options.update.push(function(){
             var legende = self.options.allCarousel.eq(self.options.elementCourant).attr(self.options.legende);
             if(legende){
@@ -283,7 +297,7 @@
     Plugin.prototype.vignette = function(){
         var self = this;
         var vignetteRatio = self.options.vignetteHauteur / self.options.vignetteLargeur;
-        $(self.element).append("<div class='vignetteCarousel'></div>");
+        $(self.element).append("<div class='vignetteCarousel plopCarousel'></div>");
         self.options.allCarousel.each(function(index){
             var carouselRatio = $(this).height() / $(this).width(), hauteur,largeur,style;
             if (vignetteRatio > carouselRatio)
@@ -305,10 +319,10 @@
             'width':self.options.vignetteLargeur+'px'
         });
 
-        $(self.element).css({
+       /* $(self.element).css({
             'width':'auto',
             'height':'auto'
-        });
+        });*/
         $(self.element).find(".vignetteCarousel").find("div:first").addClass('select');
         $(self.element).find(".vignetteCarousel").find("img").live('click', function(event) {
             event.stopPropagation();
@@ -324,7 +338,7 @@
         $(self.element).find(".vignetteCarousel").find("img").hover(
             function() {
                 if($(this).attr("alt")!==""){
-                    $('body').append('<span class="infobulleCarousel"></span>');
+                    $('body').append('<span class="infobulleCarousel plopCarousel"></span>');
                     var bulle = $(".infobulleCarousel:last");
                     bulle.append($(this).attr("alt"));
                     var posTop = $(this).parent().offset().top;
@@ -362,7 +376,7 @@
     Plugin.prototype.slideVignette= function(){
         var self = this;
         var vignetteRatio = self.options.vignetteHauteur / self.options.vignetteLargeur;
-        $(self.element).append('<div class="blocVignetteCarousel"><div class="gaucheVignetteCarousel"></div><div class="masqueCarousel"><div class="slideVignetteCarousel"></div></div><div class="droiteVignetteCarousel"></div></div>');
+        $(self.element).append('<div class="blocVignetteCarousel plopCarousel"><div class="gaucheVignetteCarousel"></div><div class="masqueCarousel"><div class="slideVignetteCarousel"></div></div><div class="droiteVignetteCarousel"></div></div>');
         self.options.allCarousel.each( function(index) {
             var carouselRatio = $(this).height() / $(this).width(), hauteur,largeur,style;
             if (vignetteRatio > carouselRatio)
