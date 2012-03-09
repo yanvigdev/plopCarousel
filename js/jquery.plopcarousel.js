@@ -84,7 +84,6 @@
         }
 
         if(!self.options.hauteur){
-
             if($(self.element).height()>0){
                 self.options.hauteur = $(self.element).height();
             }else{
@@ -92,7 +91,6 @@
             }
         }
         else{
-
             $(self.element).css({'min-height':$(self.element).height(),'height':'auto'})
             }
         $(self.element).find('.animationCarousel').height(self.options.hauteur).width(self.options.largeur);
