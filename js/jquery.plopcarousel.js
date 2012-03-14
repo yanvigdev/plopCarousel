@@ -4,7 +4,7 @@
  * Comments: Yann Vignolet
  * Date : 13/01/2012
  * http://www.yannvignolet.fr
- * Version : 1.2
+ * Version : 1.2.1
  *
  * Ce plugin affiche en diaporama les images d'un conteneur avec des effets de transition.
  *
@@ -318,7 +318,9 @@
 			self.options.touch = [];
 
 			self.options.touch[0] = e.touches[0].pageX;
+			self.options.touch[2] = e.touches[0].pageY;
 			self.options.touch[1] = self.options.touch[0];
+			self.options.touch[3] = self.options.touch[2];
 
 		})
 		$(self.element).find('.animationCarousel').addClass('ePlopCarousel').live("touchmove", function(event) {
@@ -326,17 +328,22 @@
 			event.preventDefault();
 
 			self.options.touch[1] = e.touches[0].pageX;
+			self.options.touch[3] = e.touches[0].pageY;
 		})
 		$(self.element).find('.animationCarousel').addClass('ePlopCarousel').live("touchend", function(event) {
-			var e = event.originalEvent;
+			var e = event.originalEvent, annule=false;
 			event.preventDefault();
-
+			
 			if(Math.abs(self.options.touch[1] - self.options.touch[0])<20){
 				self.options.touch[1] = self.options.touch[0];
 			}
+			if((self.options.touch[3] !== self.options.touch[2])&& Math.abs(self.options.touch[3] - self.options.touch[2])>50) {				
+				var deplacement = self.options.touch[3]-self.options.touch[2];
+				$(window).scrollTop($(window).scrollTop()-deplacement);
+				annule=true;
+			}
 			
-			
-			if(self.options.touch[1] < self.options.touch[0]) {
+			if((self.options.touch[1] < self.options.touch[0])&&!annule) {
 				self.options.allCarousel.stop(true, true);
 				self.options.elementPrecedent = Number($(self.element).find('.active').attr('data'));
 				self.options.elementCourant = ((self.options.elementPrecedent + 1) >= (self.options.nbElement)) ? 0 : (self.options.elementPrecedent + 1);
@@ -344,7 +351,7 @@
 				self.play();
 				
 			}
-			if(self.options.touch[1] > self.options.touch[0]) {
+			if((self.options.touch[1] > self.options.touch[0])&&!annule) {
 				self.options.allCarousel.stop(true, true);
 				self.options.elementPrecedent = Number($(self.element).find('.active').attr('data'));
 				self.options.elementCourant = ((self.options.elementPrecedent - 1) < 0) ? (self.options.nbElement - 1) : (self.options.elementPrecedent - 1);
