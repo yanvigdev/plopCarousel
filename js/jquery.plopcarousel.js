@@ -16,7 +16,8 @@
 	 * settings sont les variables attachees a chaque carousel
 	 *
 	 * event 'reloadcarousel' sur le conteneur relancera l'execution du carousel en cas de changement de contenu
-	 */"use strict";
+	 */
+        "use strict";
 	var pluginName = "plopCarousel", defaults = {
 		delay : 3000, //delais en milliseconde (par defaut 3000)
 		mode : "fade", //mode de transition (par defaut fade)
@@ -96,7 +97,7 @@
 			$(self.element).css({
 				'min-height' : $(self.element).height(),
 				'height' : 'auto'
-			})
+			});
 		}
 		$(self.element).find('.animationCarousel').height(self.options.hauteur).width(self.options.largeur);
 		self.options.nbElement = self.options.allCarousel.length;
@@ -138,8 +139,8 @@
 			self.options.allCarousel.stop(true, true);
 			self.options.tempo = window.clearTimeout(self.options.tempo);
 			$(self.element).find('.ePlopCarousel').die('click,touchstart,touchmove,touchend');
-			
-			
+
+
 
 		});
 	};
@@ -191,31 +192,32 @@
 			 $(this).attr('width', parseInt(self.options.hauteur * $(this).width() / $(this).height(), 10));
 			 $(this).attr('height', self.options.hauteur);
 			 }*/
-			var ratio = $(this).width()/$(this).height()
+			var ratio = $(this).width()/$(this).height(),
+                        marge;
 			if(ratio>1){
-				
+
 				$(this).width(self.options.largeur);
 				$(this).height(Math.ceil(self.options.largeur/ratio));
-				
+
 			}
 			if(ratio<1){
-				
+
 				$(this).height(self.options.hauteur);
 				$(this).width(Math.ceil(self.options.hauteur*ratio));
-				
-				
+
+
 			}
-			
+
 			if(self.options.hauteur !== $(this).height()) {
 
-				var marge = ((self.options.hauteur - $(this).height()) / 2);
+				marge = ((self.options.hauteur - $(this).height()) / 2);
 				$(this).css({
 					'margin-top' : Math.ceil(marge) + 'px',
 					'margin-botom' : Math.floor(marge) + 'px'
 				});
 			}
 			if(self.options.largeur !== $(this).width()) {
-				var marge = ((self.options.largeur - $(this).width()) / 2);
+				marge = ((self.options.largeur - $(this).width()) / 2);
 				$(this).css({
 					'margin-left' : Math.ceil(marge) + 'px',
 					'margin-right' : Math.floor(marge) + 'px'
@@ -242,7 +244,7 @@
 			if(self.options.gestionTouche){
 				self.touchMobile();
 			}
-			
+
 			self.startCarousel();
 		}
 		else {
@@ -272,7 +274,7 @@
 		});
 		$(self.element).find('.flecheDroite').addClass('ePlopCarousel').live('click , touchstart', function(event) {
 			event.stopPropagation();
-			
+
 			self.options.allCarousel.stop(true, true);
 			self.options.elementPrecedent = Number($(self.element).find('.active').attr('data'));
 			self.options.elementCourant = ((self.options.elementPrecedent + 1) >= (self.options.nbElement)) ? 0 : (self.options.elementPrecedent + 1);
@@ -322,34 +324,34 @@
 			self.options.touch[1] = self.options.touch[0];
 			self.options.touch[3] = self.options.touch[2];
 
-		})
+		});
 		$(self.element).find('.animationCarousel').addClass('ePlopCarousel').live("touchmove", function(event) {
 			var e = event.originalEvent;
 			event.preventDefault();
 
 			self.options.touch[1] = e.touches[0].pageX;
 			self.options.touch[3] = e.touches[0].pageY;
-		})
+		});
 		$(self.element).find('.animationCarousel').addClass('ePlopCarousel').live("touchend", function(event) {
 			var e = event.originalEvent, annule=false;
 			event.preventDefault();
-			
+
 			if(Math.abs(self.options.touch[1] - self.options.touch[0])<20){
 				self.options.touch[1] = self.options.touch[0];
 			}
-			if((self.options.touch[3] !== self.options.touch[2])&& Math.abs(self.options.touch[3] - self.options.touch[2])>50) {				
+			if((self.options.touch[3] !== self.options.touch[2])&& Math.abs(self.options.touch[3] - self.options.touch[2])>50) {
 				var deplacement = self.options.touch[3]-self.options.touch[2];
 				$(window).scrollTop($(window).scrollTop()-deplacement);
 				annule=true;
 			}
-			
+
 			if((self.options.touch[1] < self.options.touch[0])&&!annule) {
 				self.options.allCarousel.stop(true, true);
 				self.options.elementPrecedent = Number($(self.element).find('.active').attr('data'));
 				self.options.elementCourant = ((self.options.elementPrecedent + 1) >= (self.options.nbElement)) ? 0 : (self.options.elementPrecedent + 1);
 				self.options.click = true;
 				self.play();
-				
+
 			}
 			if((self.options.touch[1] > self.options.touch[0])&&!annule) {
 				self.options.allCarousel.stop(true, true);
@@ -359,7 +361,7 @@
 				self.play();
 
 			}
-		})
+		});
 	};
 
 
