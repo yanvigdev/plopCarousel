@@ -4,7 +4,7 @@
  * Comments: Yann Vignolet
  * Date : 13/01/2012
  * http://www.yannvignolet.fr
- * Version : 1.2.1
+ * Version : 1.2.2
  *
  * Ce plugin affiche en diaporama les images d'un conteneur avec des effets de transition.
  *
@@ -111,6 +111,7 @@
 		}
 		$(self.element).one('reloadcarousel', function(event, callback) {
 			event.stopPropagation();
+
 			$(self.element).trigger('stopcarousel');
 
 			if( typeof callback === 'function') {
@@ -138,7 +139,10 @@
 
 			self.options.allCarousel.stop(true, true);
 			self.options.tempo = window.clearTimeout(self.options.tempo);
-			$(self.element).find('.ePlopCarousel').die('click,touchstart,touchmove,touchend');
+			$(self.element).find('.ePlopCarousel').unbind('click');
+			$(self.element).find('.animationCarousel').die('touchstart');
+			$(self.element).find('.animationCarousel').die('touchmove');
+			$(self.element).find('.animationCarousel').die('touchend');
 
 
 
@@ -325,14 +329,14 @@
 			self.options.touch[3] = self.options.touch[2];
 
 		});
-		$(self.element).find('.animationCarousel').addClass('ePlopCarousel').live("touchmove", function(event) {
+		$(self.element).find('.animationCarousel').live("touchmove", function(event) {
 			var e = event.originalEvent;
 			event.preventDefault();
 
 			self.options.touch[1] = e.touches[0].pageX;
 			self.options.touch[3] = e.touches[0].pageY;
 		});
-		$(self.element).find('.animationCarousel').addClass('ePlopCarousel').live("touchend", function(event) {
+		$(self.element).find('.animationCarousel').live("touchend", function(event) {
 			var e = event.originalEvent, annule=false;
 			event.preventDefault();
 
@@ -341,7 +345,10 @@
 			}
 			if((self.options.touch[3] !== self.options.touch[2])&& Math.abs(self.options.touch[3] - self.options.touch[2])>50) {
 				var deplacement = self.options.touch[3]-self.options.touch[2];
-				$(window).scrollTop($(window).scrollTop()-deplacement);
+				//$(window).scrollTop($(window).scrollTop()-deplacement);
+				var scroll = $('body').scrollTop()-deplacement;
+				console.log('scroll'+ scroll)
+				$('body').animate({scrollTop : scroll},'fast','swing')
 				annule=true;
 			}
 
@@ -361,6 +368,7 @@
 				self.play();
 
 			}
+
 		});
 	};
 
