@@ -347,7 +347,7 @@
 				var deplacement = self.options.touch[3]-self.options.touch[2];
 				//$(window).scrollTop($(window).scrollTop()-deplacement);
 				var scroll = $('body').scrollTop()-deplacement;
-				console.log('scroll'+ scroll)
+				
 				$('body').animate({scrollTop : scroll},'fast','swing')
 				annule=true;
 			}
