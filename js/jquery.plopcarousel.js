@@ -4,7 +4,7 @@
  * Comments: Yann Vignolet
  * Date : 13/01/2012
  * http://www.yannvignolet.fr
- * Version : 1.2.2
+ * Version : 1.2.3
  *
  * Ce plugin affiche en diaporama les images d'un conteneur avec des effets de transition.
  *
@@ -154,8 +154,16 @@
 	 */
 	Plugin.prototype.precharger_image = function() {
 		var self = this, _done = function() {
-			self.setCarousel();
-			return true;
+			if(self.options.allCarousel.eq(0).width()===0 || self.options.allCarousel.eq(0).height()===0){
+				
+				setTimeout(function(){
+					_done();
+				},800);
+				
+			}else{
+				self.setCarousel();
+				return true;
+			}
 		}, i = 0, loaderCarouselProgress = 100 / self.options.nbElement;
 		self.options.allCarousel.each(function() {
 			var _img = this, _checki = function(e) {
