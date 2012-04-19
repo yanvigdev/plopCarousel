@@ -4,7 +4,7 @@
  * Comments: Yann Vignolet
  * Date : 13/01/2012
  * http://www.yannvignolet.fr
- * Version : 1.2.3
+ * Version : 1.2.4
  *
  * Ce plugin affiche en diaporama les images d'un conteneur avec des effets de transition.
  *
@@ -140,6 +140,14 @@
 			self.options.allCarousel.stop(true, true);
 			self.options.tempo = window.clearTimeout(self.options.tempo);
 			$(self.element).find('.ePlopCarousel').unbind('click');
+			$(self.element).find('.flecheGauche').die('click');
+			$(self.element).find('.flecheDroite').die('click');
+			$(self.element).find('.gaucheVignetteCarousel').die('click');
+			$(self.element).find('.droiteVignetteCarousel').die('click');
+			$(self.element).find(".slideVignetteCarousel").find("img").die('click');
+			$(self.element).find(".vignetteCarousel").find("img").die('click');
+			$(self.element).find(".slideVignetteCarousel").find("img").die('click');
+			$(self.element).find(".selecteurCarousel").find("span").die('click');
 			$(self.element).find('.animationCarousel').die('touchstart');
 			$(self.element).find('.animationCarousel').die('touchmove');
 			$(self.element).find('.animationCarousel').die('touchend');
