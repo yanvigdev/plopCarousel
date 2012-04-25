@@ -74,7 +74,7 @@
     -khtml-opacity: 0.3;
     opacity: 0.3;
 }
-.vignetteCarousel > div:hover > img, .vignetteCarousel > div.select > img, .slideVignetteCarousel > div.select > img {
+.vignetteCarousel > div:hover > img, .vignetteCarousel > div.select > img, .slideVignetteCarousel > div.select > img, .slideVignetteCarousel > div:hover > img {
     -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
     filter: alpha(opacity=100);
     -moz-opacity: 1;
